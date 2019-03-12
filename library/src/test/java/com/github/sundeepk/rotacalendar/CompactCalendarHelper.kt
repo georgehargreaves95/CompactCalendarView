@@ -1,8 +1,9 @@
-package com.github.sundeepk.RotaCalendar
+package com.github.sundeepk.rotacalendar
 
 import android.graphics.Color
 
-import com.github.sundeepk.RotaCalendar.domain.Event
+import com.github.sundeepk.rotacalendar.events.Event
+import com.github.sundeepk.rotacalendar.events.Events
 
 import java.util.ArrayList
 import java.util.Arrays
@@ -25,7 +26,12 @@ object CompactCalendarHelper {
         val events = ArrayList<Event>()
         for (i in start until days) {
             setDateTime(timeStamp, currentCalender, i)
-            events.add(Event(color, currentCalender.timeInMillis))
+            events.add(
+                Event(
+                    color,
+                    currentCalender.timeInMillis
+                )
+            )
         }
         return events
     }
@@ -36,8 +42,16 @@ object CompactCalendarHelper {
         for (i in start until days) {
             setDateTime(timeStamp, currentCalender, i)
             val eventList = ArrayList<Event>()
-            eventList.add(Event(Color.BLUE, currentCalender.timeInMillis))
-            val eventsObject = Events(currentCalender.timeInMillis, eventList)
+            eventList.add(
+                Event(
+                    Color.BLUE,
+                    currentCalender.timeInMillis
+                )
+            )
+            val eventsObject = Events(
+                currentCalender.timeInMillis,
+                eventList
+            )
             events.add(eventsObject)
         }
         return events
@@ -50,9 +64,22 @@ object CompactCalendarHelper {
         for (i in start until days) {
             setDateTime(timeStamp, currentCalender, i)
             val eventList = ArrayList<Event>()
-            eventList.add(Event(Color.BLUE, currentCalender.timeInMillis))
-            eventList.add(Event(Color.RED, currentCalender.timeInMillis + 3600 * 1000))
-            val eventsObject = Events(currentCalender.timeInMillis, eventList)
+            eventList.add(
+                Event(
+                    Color.BLUE,
+                    currentCalender.timeInMillis
+                )
+            )
+            eventList.add(
+                Event(
+                    Color.RED,
+                    currentCalender.timeInMillis + 3600 * 1000
+                )
+            )
+            val eventsObject = Events(
+                currentCalender.timeInMillis,
+                eventList
+            )
             events.add(eventsObject)
         }
         return events
@@ -64,12 +91,27 @@ object CompactCalendarHelper {
         for (i in start until days) {
             setDateTime(timeStamp, currentCalender, i)
             val eventsList = Arrays.asList(
-                Event(Color.BLUE, currentCalender.timeInMillis),
-                Event(Color.RED, currentCalender.timeInMillis + 3600 * 1000),
-                Event(Color.RED, currentCalender.timeInMillis + 3600 * 2 * 1000),
-                Event(Color.RED, currentCalender.timeInMillis + 3600 * 3 * 1000)
+                Event(
+                    Color.BLUE,
+                    currentCalender.timeInMillis
+                ),
+                Event(
+                    Color.RED,
+                    currentCalender.timeInMillis + 3600 * 1000
+                ),
+                Event(
+                    Color.RED,
+                    currentCalender.timeInMillis + 3600 * 2 * 1000
+                ),
+                Event(
+                    Color.RED,
+                    currentCalender.timeInMillis + 3600 * 3 * 1000
+                )
             )
-            val eventsObject = Events(currentCalender.timeInMillis, eventsList)
+            val eventsObject = Events(
+                currentCalender.timeInMillis,
+                eventsList
+            )
             events.add(eventsObject)
         }
         return events
@@ -86,10 +128,22 @@ object CompactCalendarHelper {
             setDateTime(timeStamp, currentCalender, i)
             val eventList = ArrayList<Event>()
             val events = Arrays.asList(
-                Event(Color.BLUE, currentCalender.timeInMillis),
-                Event(Color.RED, currentCalender.timeInMillis + 3600 * 1000),
-                Event(Color.RED, currentCalender.timeInMillis + 3600 * 2 * 1000),
-                Event(Color.RED, currentCalender.timeInMillis + 3600 * 3 * 1000)
+                Event(
+                    Color.BLUE,
+                    currentCalender.timeInMillis
+                ),
+                Event(
+                    Color.RED,
+                    currentCalender.timeInMillis + 3600 * 1000
+                ),
+                Event(
+                    Color.RED,
+                    currentCalender.timeInMillis + 3600 * 2 * 1000
+                ),
+                Event(
+                    Color.RED,
+                    currentCalender.timeInMillis + 3600 * 3 * 1000
+                )
             )
             eventList.addAll(events)
             epochMillisToEvents[currentCalender.timeInMillis] = eventList

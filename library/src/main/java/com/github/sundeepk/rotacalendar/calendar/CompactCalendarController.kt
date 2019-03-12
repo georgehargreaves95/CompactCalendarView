@@ -1,6 +1,7 @@
-package com.github.sundeepk.RotaCalendar
+package com.github.sundeepk.rotacalendar.calendar
 
 import android.content.Context
+import android.content.res.TypedArray
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -13,18 +14,28 @@ import android.view.MotionEvent
 import android.view.VelocityTracker
 import android.view.ViewConfiguration
 import android.widget.OverScroller
-import com.github.sundeepk.RotaCalendar.domain.Event
+import com.github.sundeepk.rotacalendar.R
+import com.github.sundeepk.rotacalendar.WeekUtils
+import com.github.sundeepk.rotacalendar.calendar.CompactCalendarController.Direction.*
+import com.github.sundeepk.rotacalendar.calendar.CompactCalendarView.*
+import com.github.sundeepk.rotacalendar.calendar.CompactCalendarView.Companion.FILL_LARGE_INDICATOR
+import com.github.sundeepk.rotacalendar.calendar.CompactCalendarView.Companion.NO_FILL_LARGE_INDICATOR
+import com.github.sundeepk.rotacalendar.calendar.CompactCalendarView.Companion.SMALL_INDICATOR
+import com.github.sundeepk.rotacalendar.events.Event
+import com.github.sundeepk.rotacalendar.events.EventsContainer
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 
-import com.github.sundeepk.RotaCalendar.CompactCalendarView.CompactCalendarViewListener
-import com.github.sundeepk.RotaCalendar.CompactCalendarView.Companion.FILL_LARGE_INDICATOR
-import com.github.sundeepk.RotaCalendar.CompactCalendarView.Companion.NO_FILL_LARGE_INDICATOR
-import com.github.sundeepk.RotaCalendar.CompactCalendarView.Companion.SMALL_INDICATOR
 
-
+private const val THIRTY_ONE_DAY_STRING = "31"
+private const val MIN_DAYS = 1
+private const val INIT_PADDING = 40
+private const val INIT_VALUE = 0
+private const val INIT_TEXT_SIZE = 30
+private const val INIT_GROW_FACTOR = 0f
+private const val INIT_SCREEN_DENSITY = 1f
 internal class CompactCalendarController(
     dayPaint: Paint,
     private val scroller: OverScroller,
@@ -45,38 +56,38 @@ internal class CompactCalendarController(
     private var eventIndicatorStyle = SMALL_INDICATOR
     private var currentDayIndicatorStyle = FILL_LARGE_INDICATOR
     private var currentSelectedDayIndicatorStyle = FILL_LARGE_INDICATOR
-    private var paddingWidth = 40
-    private var paddingHeight = 40
-    private var textHeight: Int = 0
-    private var textWidth: Int = 0
-    private var widthPerDay: Int = 0
-    private var monthsScrolledSoFar: Int = 0
-    var heightPerDay: Int = 0
+    private var paddingWidth = INIT_PADDING
+    private var paddingHeight = INIT_PADDING
+    private var textHeight: Int = INIT_VALUE
+    private var textWidth: Int = INIT_VALUE
+    private var widthPerDay: Int = INIT_VALUE
+    private var monthsScrolledSoFar: Int = INIT_VALUE
+    var heightPerDay: Int = INIT_VALUE
         private set
-    private var textSize = 30
-    var width: Int = 0
+    private var textSize = INIT_TEXT_SIZE
+    var width: Int = INIT_VALUE
         private set
-    private var height: Int = 0
-    private var paddingRight: Int = 0
-    private var paddingLeft: Int = 0
-    private var maximumVelocity: Int = 0
-    private var densityAdjustedSnapVelocity: Int = 0
-    private var distanceThresholdForAutoScroll: Int = 0
-    var targetHeight: Int = 0
-    private var animationStatus = 0
+    private var height: Int = INIT_VALUE
+    private var paddingRight: Int = INIT_VALUE
+    private var paddingLeft: Int = INIT_VALUE
+    private var maximumVelocity: Int = INIT_VALUE
+    private var densityAdjustedSnapVelocity: Int = INIT_VALUE
+    private var distanceThresholdForAutoScroll: Int = INIT_VALUE
+    var targetHeight: Int = INIT_VALUE
+    private var animationStatus = INIT_VALUE
     private var firstDayOfWeekToDraw = Calendar.MONDAY
-    private var xIndicatorOffset: Float = 0.toFloat()
-    private var multiDayIndicatorStrokeWidth: Float = 0.toFloat()
-    var dayIndicatorRadius: Float = 0.toFloat()
+    private var xIndicatorOffset: Float = INIT_VALUE.toFloat()
+    private var multiDayIndicatorStrokeWidth: Float = INIT_VALUE.toFloat()
+    var dayIndicatorRadius: Float = INIT_VALUE.toFloat()
         private set
-    private var smallIndicatorRadius: Float = 0.toFloat()
-    var growFactor = 0f
+    private var smallIndicatorRadius: Float = INIT_VALUE.toFloat()
+    var growFactor = INIT_GROW_FACTOR
         private set
-    var screenDensity = 1f
+    var screenDensity = INIT_SCREEN_DENSITY
         private set
-    var growFactorIndicator: Float = 0.toFloat()
-    private var distanceX: Float = 0.toFloat()
-    private var lastAutoScrollFromFling: Long = 0
+    var growFactorIndicator: Float = INIT_VALUE.toFloat()
+    private var distanceX: Float = INIT_VALUE.toFloat()
+    private var lastAutoScrollFromFling: Long = INIT_VALUE.toLong()
 
     private var useThreeLetterAbbreviation = false
     private var isSmoothScrolling: Boolean = false
@@ -89,20 +100,20 @@ internal class CompactCalendarController(
 
     private var listener: CompactCalendarViewListener? = null
     private var velocityTracker: VelocityTracker? = null
-    private var currentDirection = Direction.NONE
+    private var currentDirection = NONE
     private var currentDate = Date()
     private var currentCalender: Calendar? = null
     private var todayCalender: Calendar? = null
-    private var calendarWithFirstDayOfMonth: Calendar? = null
+    private lateinit var calendarWithFirstDayOfMonth: Calendar
     private var eventsCalendar: Calendar? = null
     private val accumulatedScrollOffset = PointF()
     private var dayPaint = Paint()
     private val background = Paint()
     private lateinit var dayColumnNames: Array<String?>
-    private var currentDayTextColor: Int = 0
-    private var currentSelectedDayTextColor: Int = 0
+    private var currentDayTextColor: Int = INIT_VALUE
+    private var currentSelectedDayTextColor: Int = INIT_VALUE
     private var calenderBackgroundColor = Color.WHITE
-    private var otherMonthDaysTextColor: Int = 0
+    private var otherMonthDaysTextColor: Int = INIT_VALUE
 
     /**
      * Only used in onDrawCurrentMonth to temporarily calculate previous month days
@@ -137,7 +148,7 @@ internal class CompactCalendarController(
             val calendar = Calendar.getInstance(timeZone, locale)
             calendar.time = currentDate
             calendar.add(Calendar.MONTH, monthsScrolledSoFar())
-            calendar.set(Calendar.DAY_OF_MONTH, 1)
+            calendar.set(Calendar.DAY_OF_MONTH, MIN_DAYS)
             setToMidnight(calendar)
             return calendar.time
         }
@@ -152,89 +163,113 @@ internal class CompactCalendarController(
         this.velocityTracker = velocityTracker
         this.displayOtherMonthDays = false
         loadAttributes(attrs, context)
-        init(context)
+        initUi(context)
     }
 
     private fun loadAttributes(attrs: AttributeSet?, context: Context?) {
         if (attrs != null && context != null) {
-            val typedArray =
-                context.theme.obtainStyledAttributes(attrs, R.styleable.CompactCalendarView, 0, 0)
+            val typedArray = context.theme
+                .obtainStyledAttributes(
+                    attrs,
+                    R.styleable.CompactCalendarView,
+                    0,
+                    0
+                )
             try {
-                currentDayBackgroundColor = typedArray.getColor(
-                    R.styleable.CompactCalendarView_compactCalendarCurrentDayBackgroundColor,
-                    currentDayBackgroundColor
-                )
-                calenderTextColor = typedArray.getColor(
-                    R.styleable.CompactCalendarView_compactCalendarTextColor,
-                    calenderTextColor
-                )
-                currentDayTextColor = typedArray.getColor(
-                    R.styleable.CompactCalendarView_compactCalendarCurrentDayTextColor,
-                    calenderTextColor
-                )
-                otherMonthDaysTextColor = typedArray.getColor(
-                    R.styleable.CompactCalendarView_compactCalendarOtherMonthDaysTextColor,
-                    otherMonthDaysTextColor
-                )
-                currentSelectedDayBackgroundColor = typedArray.getColor(
-                    R.styleable.CompactCalendarView_compactCalendarCurrentSelectedDayBackgroundColor,
-                    currentSelectedDayBackgroundColor
-                )
-                currentSelectedDayTextColor = typedArray.getColor(
-                    R.styleable.CompactCalendarView_compactCalendarCurrentSelectedDayTextColor,
-                    calenderTextColor
-                )
-                calenderBackgroundColor = typedArray.getColor(
-                    R.styleable.CompactCalendarView_compactCalendarBackgroundColor,
-                    calenderBackgroundColor
-                )
-                multiEventIndicatorColor = typedArray.getColor(
-                    R.styleable.CompactCalendarView_compactCalendarMultiEventIndicatorColor,
-                    multiEventIndicatorColor
-                )
-                textSize = typedArray.getDimensionPixelSize(
-                    R.styleable.CompactCalendarView_compactCalendarTextSize,
-                    TypedValue.applyDimension(
-                        TypedValue.COMPLEX_UNIT_SP,
-                        textSize.toFloat(),
-                        context.resources.displayMetrics
-                    ).toInt()
-                )
-                targetHeight = typedArray.getDimensionPixelSize(
-                    R.styleable.CompactCalendarView_compactCalendarTargetHeight,
-                    TypedValue.applyDimension(
-                        TypedValue.COMPLEX_UNIT_DIP,
-                        targetHeight.toFloat(),
-                        context.resources.displayMetrics
-                    ).toInt()
-                )
-                eventIndicatorStyle = typedArray.getInt(
-                    R.styleable.CompactCalendarView_compactCalendarEventIndicatorStyle,
-                    SMALL_INDICATOR
-                )
-                currentDayIndicatorStyle = typedArray.getInt(
-                    R.styleable.CompactCalendarView_compactCalendarCurrentDayIndicatorStyle,
-                    FILL_LARGE_INDICATOR
-                )
-                currentSelectedDayIndicatorStyle = typedArray.getInt(
-                    R.styleable.CompactCalendarView_compactCalendarCurrentSelectedDayIndicatorStyle,
-                    FILL_LARGE_INDICATOR
-                )
-                displayOtherMonthDays = typedArray.getBoolean(
-                    R.styleable.CompactCalendarView_compactCalendarDisplayOtherMonthDays,
-                    displayOtherMonthDays
-                )
-                shouldSelectFirstDayOfMonthOnScroll = typedArray.getBoolean(
-                    R.styleable.CompactCalendarView_compactCalendarShouldSelectFirstDayOfMonthOnScroll,
-                    shouldSelectFirstDayOfMonthOnScroll
-                )
+                initColours(typedArray)
+                initStyles(typedArray)
+                initDimensions(typedArray, context)
+                initBools(typedArray)
             } finally {
                 typedArray.recycle()
             }
         }
     }
 
-    private fun init(context: Context?) {
+    private fun initDimensions(
+        typedArray: TypedArray,
+        context: Context
+    ) {
+        textSize = typedArray.getDimensionPixelSize(
+            R.styleable.CompactCalendarView_compactCalendarTextSize,
+            TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_SP,
+                textSize.toFloat(),
+                context.resources.displayMetrics
+            ).toInt()
+        )
+        targetHeight = typedArray.getDimensionPixelSize(
+            R.styleable.CompactCalendarView_compactCalendarTargetHeight,
+            TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                targetHeight.toFloat(),
+                context.resources.displayMetrics
+            ).toInt()
+        )
+    }
+
+    private fun initBools(typedArray: TypedArray) {
+        displayOtherMonthDays = typedArray.getBoolean(
+            R.styleable.CompactCalendarView_compactCalendarDisplayOtherMonthDays,
+            displayOtherMonthDays
+        )
+        shouldSelectFirstDayOfMonthOnScroll = typedArray.getBoolean(
+            R.styleable.CompactCalendarView_compactCalendarShouldSelectFirstDayOfMonthOnScroll,
+            shouldSelectFirstDayOfMonthOnScroll
+        )
+    }
+
+    private fun initStyles(typedArray: TypedArray) {
+        eventIndicatorStyle = typedArray.getInt(
+            R.styleable.CompactCalendarView_compactCalendarEventIndicatorStyle,
+            SMALL_INDICATOR
+        )
+        currentDayIndicatorStyle = typedArray.getInt(
+            R.styleable.CompactCalendarView_compactCalendarCurrentDayIndicatorStyle,
+            FILL_LARGE_INDICATOR
+        )
+        currentSelectedDayIndicatorStyle = typedArray.getInt(
+            R.styleable.CompactCalendarView_compactCalendarCurrentSelectedDayIndicatorStyle,
+            FILL_LARGE_INDICATOR
+        )
+    }
+
+    private fun initColours(typedArray: TypedArray) {
+        currentDayBackgroundColor = typedArray.getColor(
+            R.styleable.CompactCalendarView_compactCalendarCurrentDayBackgroundColor,
+            currentDayBackgroundColor
+        )
+        calenderTextColor = typedArray.getColor(
+            R.styleable.CompactCalendarView_compactCalendarTextColor,
+            calenderTextColor
+        )
+        currentDayTextColor = typedArray.getColor(
+            R.styleable.CompactCalendarView_compactCalendarCurrentDayTextColor,
+            calenderTextColor
+        )
+        otherMonthDaysTextColor = typedArray.getColor(
+            R.styleable.CompactCalendarView_compactCalendarOtherMonthDaysTextColor,
+            otherMonthDaysTextColor
+        )
+        currentSelectedDayBackgroundColor = typedArray.getColor(
+            R.styleable.CompactCalendarView_compactCalendarCurrentSelectedDayBackgroundColor,
+            currentSelectedDayBackgroundColor
+        )
+        currentSelectedDayTextColor = typedArray.getColor(
+            R.styleable.CompactCalendarView_compactCalendarCurrentSelectedDayTextColor,
+            calenderTextColor
+        )
+        calenderBackgroundColor = typedArray.getColor(
+            R.styleable.CompactCalendarView_compactCalendarBackgroundColor,
+            calenderBackgroundColor
+        )
+        multiEventIndicatorColor = typedArray.getColor(
+            R.styleable.CompactCalendarView_compactCalendarMultiEventIndicatorColor,
+            multiEventIndicatorColor
+        )
+    }
+
+    private fun initUi(context: Context?) {
         currentCalender = Calendar.getInstance(timeZone, locale)
         todayCalender = Calendar.getInstance(timeZone, locale)
         calendarWithFirstDayOfMonth = Calendar.getInstance(timeZone, locale)
@@ -243,7 +278,7 @@ internal class CompactCalendarController(
 
         // make setMinimalDaysInFirstWeek same across android versions
         eventsCalendar!!.minimalDaysInFirstWeek = 1
-        calendarWithFirstDayOfMonth!!.minimalDaysInFirstWeek = 1
+        calendarWithFirstDayOfMonth.minimalDaysInFirstWeek = 1
         todayCalender!!.minimalDaysInFirstWeek = 1
         currentCalender!!.minimalDaysInFirstWeek = 1
         tempPreviousMonthCalendar!!.minimalDaysInFirstWeek = 1
@@ -251,13 +286,7 @@ internal class CompactCalendarController(
         setFirstDayOfWeek(firstDayOfWeekToDraw)
 
         setUseWeekDayAbbreviation(false)
-        dayPaint.textAlign = Paint.Align.CENTER
-        dayPaint.style = Paint.Style.STROKE
-        dayPaint.flags = Paint.ANTI_ALIAS_FLAG
-        dayPaint.typeface = Typeface.SANS_SERIF
-        dayPaint.textSize = textSize.toFloat()
-        dayPaint.color = calenderTextColor
-        dayPaint.getTextBounds("31", 0, "31".length, textSizeRect)
+        initDayPaint()
         textHeight = textSizeRect.height() * 3
         textWidth = textSizeRect.width() * 2
 
@@ -281,6 +310,23 @@ internal class CompactCalendarController(
 
         //just set a default growFactor to draw full calendar when initialised
         growFactor = Integer.MAX_VALUE.toFloat()
+    }
+
+    private fun initDayPaint() {
+        dayPaint.apply {
+            textAlign = Paint.Align.CENTER
+            style = Paint.Style.STROKE
+            flags = Paint.ANTI_ALIAS_FLAG
+            typeface = Typeface.SANS_SERIF
+            textSize = this@CompactCalendarController.textSize.toFloat()
+            color = calenderTextColor
+            getTextBounds(
+                THIRTY_ONE_DAY_STRING,
+                0,
+                THIRTY_ONE_DAY_STRING.length,
+                textSizeRect
+            )
+        }
     }
 
     private fun initScreenDensityRelatedValues(context: Context?) {
@@ -439,9 +485,14 @@ internal class CompactCalendarController(
         }
         this.locale = locale
         this.timeZone = timeZone
-        this.eventsContainer = EventsContainer(Calendar.getInstance(this.timeZone, this.locale))
-        // passing null will not re-init density related values - and that's ok
-        init(null)
+        this.eventsContainer = EventsContainer(
+            Calendar.getInstance(
+                this.timeZone,
+                this.locale
+            )
+        )
+        // passing null will not re-initUi density related values - and that's ok
+        initUi(null)
     }
 
     fun setUseWeekDayAbbreviation(useThreeLetterAbbreviation: Boolean) {
@@ -465,7 +516,8 @@ internal class CompactCalendarController(
     }
 
     fun onMeasure(width: Int, height: Int, paddingRight: Int, paddingLeft: Int) {
-        widthPerDay = width / DAYS_IN_WEEK
+        widthPerDay = width /
+                DAYS_IN_WEEK
         heightPerDay = if (targetHeight > 0) targetHeight / 7 else height / 7
         this.width = width
         this.distanceThresholdForAutoScroll = (width * 0.50).toInt()
@@ -478,7 +530,8 @@ internal class CompactCalendarController(
 
         // scale the selected day indicators slightly so that event indicators can be drawn below
         dayIndicatorRadius = if (shouldDrawIndicatorsBelowSelectedDays
-            && eventIndicatorStyle == CompactCalendarView.SMALL_INDICATOR) {
+            && eventIndicatorStyle == CompactCalendarView.SMALL_INDICATOR
+        ) {
             dayIndicatorRadius * 0.85f
         } else {
             dayIndicatorRadius
@@ -571,11 +624,13 @@ internal class CompactCalendarController(
             return true
         }
 
-        if (currentDirection == Direction.NONE) {
+        if (currentDirection == NONE) {
             if (Math.abs(distanceX) > Math.abs(distanceY)) {
-                currentDirection = Direction.HORIZONTAL
+                currentDirection =
+                        Direction.HORIZONTAL
             } else {
-                currentDirection = Direction.VERTICAL
+                currentDirection =
+                        Direction.VERTICAL
             }
         }
 
@@ -627,7 +682,8 @@ internal class CompactCalendarController(
         val velocityX = computeVelocity()
         handleSmoothScrolling(velocityX)
 
-        currentDirection = Direction.NONE
+        currentDirection =
+                NONE
         setCalenderToFirstDayOfMonth(
             calendarWithFirstDayOfMonth,
             currentDate,
@@ -982,20 +1038,15 @@ internal class CompactCalendarController(
         return dayOfWeek
     }
 
-    fun drawMonth(canvas: Canvas, monthToDrawCalender: Calendar?, offset: Int) {
+    fun drawMonth(canvas: Canvas, monthToDrawCalender: Calendar, offset: Int) {
         drawEvents(canvas, monthToDrawCalender, offset)
 
         //offset by one because we want to start from Monday
         val firstDayOfMonth = getDayOfWeek(monthToDrawCalender)
 
-        val isSameMonthAsToday =
-            monthToDrawCalender!!.get(Calendar.MONTH) == todayCalender!!.get(Calendar.MONTH)
-        val isSameYearAsToday =
-            monthToDrawCalender.get(Calendar.YEAR) == todayCalender!!.get(Calendar.YEAR)
-        val isSameMonthAsCurrentCalendar =
-            monthToDrawCalender.get(Calendar.MONTH) == currentCalender!!.get(Calendar.MONTH) && monthToDrawCalender.get(
-                Calendar.YEAR
-            ) == currentCalender!!.get(Calendar.YEAR)
+        val isSameMonthAsToday = isSameMonthAsToday(monthToDrawCalender)
+        val isSameYearAsToday = isSameYearAsToday(monthToDrawCalender)
+        val isSameMonthAsCurrentCalendar = isSameMonthAsCurrentCalendar(monthToDrawCalender)
         val todayDayOfMonth = todayCalender!!.get(Calendar.DAY_OF_MONTH)
         val isAnimatingWithExpose = animationStatus == EXPOSE_CALENDAR_ANIMATION
 
@@ -1021,36 +1072,37 @@ internal class CompactCalendarController(
                     dayColumn++
                 }
             }
-            if (dayColumn == dayColumnNames!!.size) {
+            if (dayColumn == dayColumnNames.size) {
                 break
             }
-            val xPosition =
-                (widthPerDay * dayColumn).toFloat() + paddingWidth.toFloat() + paddingLeft.toFloat() + accumulatedScrollOffset.x + offset.toFloat() - paddingRight
+            val xPosition = (widthPerDay * dayColumn).toFloat() +
+                    paddingWidth.toFloat() +
+                    paddingLeft.toFloat() +
+                    accumulatedScrollOffset.x +
+                    offset.toFloat() - paddingRight
+
             val yPosition = (dayRow * heightPerDay + paddingHeight).toFloat()
-            if (xPosition >= growFactor && (isAnimatingWithExpose || animationStatus == ANIMATE_INDICATORS) || yPosition >= growFactor) {
+
+            if (xPosition >= growFactor &&
+                (isAnimatingWithExpose || animationStatus == ANIMATE_INDICATORS) ||
+                yPosition >= growFactor
+            ) {
                 // don't draw days if animating expose or indicators
                 dayRow++
                 continue
             }
+
             if (dayRow == 0) {
                 // first row, so draw the first letter of the day
                 if (shouldDrawDaysHeader) {
-                    dayPaint.color = calenderTextColor
-                    dayPaint.typeface = Typeface.DEFAULT_BOLD
-                    dayPaint.style = Paint.Style.FILL
-                    dayPaint.color = calenderTextColor
-                    canvas.drawText(
-                        dayColumnNames!![colDirection],
-                        xPosition,
-                        paddingHeight.toFloat(),
-                        dayPaint
-                    )
-                    dayPaint.typeface = Typeface.DEFAULT
+                    initDayView(canvas, colDirection, xPosition)
                 }
             } else {
                 val day = (dayRow - 1) * 7 + colDirection + 1 - firstDayOfMonth
                 var defaultCalenderTextColorToUse = calenderTextColor
-                if (currentCalender!!.get(Calendar.DAY_OF_MONTH) == day && isSameMonthAsCurrentCalendar && !isAnimatingWithExpose) {
+                if (currentCalender!!.get(Calendar.DAY_OF_MONTH) == day &&
+                    isSameMonthAsCurrentCalendar &&
+                    !isAnimatingWithExpose) {
                     drawDayCircleIndicator(
                         currentSelectedDayIndicatorStyle,
                         canvas,
@@ -1102,6 +1154,34 @@ internal class CompactCalendarController(
             }
             dayRow++
         }
+    }
+
+    private fun isSameMonthAsCurrentCalendar(monthToDrawCalender: Calendar) =
+        monthToDrawCalender.get(Calendar.MONTH) == currentCalender!!.get(Calendar.MONTH) &&
+                monthToDrawCalender.get(Calendar.YEAR) == currentCalender!!.get(Calendar.YEAR)
+
+    private fun isSameYearAsToday(monthToDrawCalender: Calendar) =
+        monthToDrawCalender.get(Calendar.YEAR) == todayCalender!!.get(Calendar.YEAR)
+
+    private fun isSameMonthAsToday(monthToDrawCalender: Calendar) =
+        monthToDrawCalender.get(Calendar.MONTH) == todayCalender!!.get(Calendar.MONTH)
+
+    private fun initDayView(
+        canvas: Canvas,
+        colDirection: Int,
+        xPosition: Float
+    ) {
+        dayPaint.color = calenderTextColor
+        dayPaint.typeface = Typeface.DEFAULT_BOLD
+        dayPaint.style = Paint.Style.FILL
+        dayPaint.color = calenderTextColor
+        canvas.drawText(
+            dayColumnNames!![colDirection],
+            xPosition,
+            paddingHeight.toFloat(),
+            dayPaint
+        )
+        dayPaint.typeface = Typeface.DEFAULT
     }
 
     private fun drawDayCircleIndicator(

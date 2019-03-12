@@ -1,4 +1,4 @@
-package com.github.sundeepk.RotaCalendar
+package com.github.sundeepk.rotacalendar
 
 import org.junit.Test
 

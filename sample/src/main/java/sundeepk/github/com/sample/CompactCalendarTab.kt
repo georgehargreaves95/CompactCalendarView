@@ -14,8 +14,8 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ListView
 import android.widget.RelativeLayout
-import com.github.sundeepk.RotaCalendar.CompactCalendarView
-import com.github.sundeepk.RotaCalendar.domain.Event
+import com.github.sundeepk.rotacalendar.calendar.CompactCalendarView
+import com.github.sundeepk.rotacalendar.events.Event
 import java.text.SimpleDateFormat
 import java.util.ArrayList
 import java.util.Arrays
@@ -254,7 +254,11 @@ class CompactCalendarTab : Fragment() {
             )
         } else if (day in 3..4) {
             Arrays.asList(
-                Event(Color.argb(255, 169, 68, 65), timeInMillis, "Event at " + Date(timeInMillis)),
+                Event(
+                    Color.argb(255, 169, 68, 65),
+                    timeInMillis,
+                    "Event at " + Date(timeInMillis)
+                ),
                 Event(
                     Color.argb(255, 100, 68, 65),
                     timeInMillis,
@@ -263,13 +267,21 @@ class CompactCalendarTab : Fragment() {
             )
         } else {
             Arrays.asList(
-                Event(Color.argb(255, 169, 68, 65), timeInMillis, "Event at " + Date(timeInMillis)),
+                Event(
+                    Color.argb(255, 169, 68, 65),
+                    timeInMillis,
+                    "Event at " + Date(timeInMillis)
+                ),
                 Event(
                     Color.argb(255, 100, 68, 65),
                     timeInMillis,
                     "Event 2 at " + Date(timeInMillis)
                 ),
-                Event(Color.argb(255, 70, 68, 65), timeInMillis, "Event 3 at " + Date(timeInMillis))
+                Event(
+                    Color.argb(255, 70, 68, 65),
+                    timeInMillis,
+                    "Event 3 at " + Date(timeInMillis)
+                )
             )
         }
     }

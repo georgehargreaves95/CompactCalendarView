@@ -1,4 +1,4 @@
-package com.github.sundeepk.RotaCalendar
+package com.github.sundeepk.rotacalendar.animation
 
 
 import android.animation.Animator
@@ -6,6 +6,8 @@ import android.animation.ValueAnimator
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.Animation
 import android.view.animation.OvershootInterpolator
+import com.github.sundeepk.rotacalendar.calendar.CompactCalendarController
+import com.github.sundeepk.rotacalendar.calendar.CompactCalendarView
 
 internal class AnimationHandler(
     private val compactCalendarController: CompactCalendarController,

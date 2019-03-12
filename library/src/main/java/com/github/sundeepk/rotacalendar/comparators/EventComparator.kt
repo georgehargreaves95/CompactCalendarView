@@ -1,6 +1,6 @@
-package com.github.sundeepk.RotaCalendar.comparators
+package com.github.sundeepk.rotacalendar.comparators
 
-import com.github.sundeepk.RotaCalendar.domain.Event
+import com.github.sundeepk.rotacalendar.events.Event
 
 import java.util.Comparator
 

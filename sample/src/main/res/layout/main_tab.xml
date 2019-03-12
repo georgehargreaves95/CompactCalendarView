@@ -5,7 +5,7 @@
     android:id="@+id/main_content"
     >
 
-    <com.github.sundeepk.RotaCalendar.CompactCalendarView
+    <com.github.sundeepk.rotacalendar.calendar.CompactCalendarView
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/compactCalendar_view"
         android:layout_width="fill_parent"

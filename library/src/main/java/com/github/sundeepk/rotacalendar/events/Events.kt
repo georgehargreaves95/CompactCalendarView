@@ -1,6 +1,4 @@
-package com.github.sundeepk.RotaCalendar
-
-import com.github.sundeepk.RotaCalendar.domain.Event
+package com.github.sundeepk.rotacalendar.events
 
 internal class Events(val timeInMillis: Long, val events: ArrayList<Event>?) {
 

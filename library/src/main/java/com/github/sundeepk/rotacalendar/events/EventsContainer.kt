@@ -1,7 +1,6 @@
-package com.github.sundeepk.RotaCalendar
+package com.github.sundeepk.rotacalendar.events
 
-import com.github.sundeepk.RotaCalendar.comparators.EventComparator
-import com.github.sundeepk.RotaCalendar.domain.Event
+import com.github.sundeepk.rotacalendar.comparators.EventComparator
 
 import java.util.ArrayList
 import java.util.Calendar
@@ -24,7 +23,12 @@ class EventsContainer(private val eventsCalendar: Calendar) {
         if (eventsForTargetDay == null) {
             val events = ArrayList<Event>()
             events.add(event)
-            eventsForMonth.add(Events(event.timeInMillis, events))
+            eventsForMonth.add(
+                Events(
+                    event.timeInMillis,
+                    events
+                )
+            )
         } else {
             eventsForTargetDay.events!!.add(event)
         }

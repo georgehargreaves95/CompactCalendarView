@@ -19,9 +19,9 @@ import com.azimolabs.conditionwatcher.ConditionWatcher
 import com.azimolabs.conditionwatcher.Instruction
 import com.facebook.testing.screenshot.Screenshot
 import com.facebook.testing.screenshot.ViewHelpers
-import com.github.sundeepk.RotaCalendar.CompactCalendarView
-import com.github.sundeepk.RotaCalendar.CompactCalendarView.CompactCalendarAnimationListener
-import com.github.sundeepk.RotaCalendar.domain.Event
+import com.github.sundeepk.rotacalendar.calendar.CompactCalendarView
+import com.github.sundeepk.rotacalendar.calendar.CompactCalendarView.CompactCalendarAnimationListener
+import com.github.sundeepk.rotacalendar.events.Event
 
 import org.junit.Before
 import org.junit.Rule
@@ -41,7 +41,7 @@ import android.support.test.InstrumentationRegistry.getInstrumentation
 import android.support.test.espresso.Espresso.onView
 import android.support.test.espresso.action.ViewActions.click
 import android.support.test.espresso.matcher.ViewMatchers.withId
-import com.github.sundeepk.RotaCalendar.CompactCalendarView.CompactCalendarViewListener
+import com.github.sundeepk.rotacalendar.calendar.CompactCalendarView.CompactCalendarViewListener
 import org.junit.Assert.assertEquals
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
@@ -669,7 +669,11 @@ class ApplicationTest {
             )
         } else if (day > 2 && day <= 4) {
             Arrays.asList(
-                Event(Color.argb(255, 169, 68, 65), timeInMillis, "Event at " + Date(timeInMillis)),
+                Event(
+                    Color.argb(255, 169, 68, 65),
+                    timeInMillis,
+                    "Event at " + Date(timeInMillis)
+                ),
                 Event(
                     Color.argb(255, 100, 68, 65),
                     timeInMillis,
@@ -678,13 +682,21 @@ class ApplicationTest {
             )
         } else {
             Arrays.asList(
-                Event(Color.argb(255, 169, 68, 65), timeInMillis, "Event at " + Date(timeInMillis)),
+                Event(
+                    Color.argb(255, 169, 68, 65),
+                    timeInMillis,
+                    "Event at " + Date(timeInMillis)
+                ),
                 Event(
                     Color.argb(255, 100, 68, 65),
                     timeInMillis,
                     "Event 2 at " + Date(timeInMillis)
                 ),
-                Event(Color.argb(255, 70, 68, 65), timeInMillis, "Event 3 at " + Date(timeInMillis))
+                Event(
+                    Color.argb(255, 70, 68, 65),
+                    timeInMillis,
+                    "Event 3 at " + Date(timeInMillis)
+                )
             )
         }
     }

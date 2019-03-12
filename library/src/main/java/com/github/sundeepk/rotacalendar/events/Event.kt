@@ -1,4 +1,4 @@
-package com.github.sundeepk.RotaCalendar.domain
+package com.github.sundeepk.rotacalendar.events
 
 class Event {
 

@@ -1,4 +1,4 @@
-package com.github.sundeepk.RotaCalendar
+package com.github.sundeepk.rotacalendar.calendar
 
 import android.content.Context
 import android.graphics.Canvas
@@ -12,8 +12,10 @@ import android.view.MotionEvent
 import android.view.VelocityTracker
 import android.view.View
 import android.widget.OverScroller
+import com.github.sundeepk.rotacalendar.events.EventsContainer
+import com.github.sundeepk.rotacalendar.animation.AnimationHandler
 
-import com.github.sundeepk.RotaCalendar.domain.Event
+import com.github.sundeepk.rotacalendar.events.Event
 
 import java.util.Calendar
 import java.util.Date
@@ -27,13 +29,22 @@ class CompactCalendarView @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr) {
 
     private val animationHandler: AnimationHandler
-    private var compactCalendarController: CompactCalendarController = CompactCalendarController(
-        Paint(), OverScroller(getContext()),
-        Rect(), attrs, getContext(), Color.argb(255, 233, 84, 81),
-        Color.argb(255, 64, 64, 64), Color.argb(255, 219, 219, 219), VelocityTracker.obtain(),
-        Color.argb(255, 100, 68, 65), EventsContainer(Calendar.getInstance()),
-        Locale.getDefault(), TimeZone.getDefault()
-    )
+    private var compactCalendarController: CompactCalendarController =
+        CompactCalendarController(
+            Paint(),
+            OverScroller(getContext()),
+            Rect(),
+            attrs,
+            getContext(),
+            Color.argb(255, 233, 84, 81),
+            Color.argb(255, 64, 64, 64),
+            Color.argb(255, 219, 219, 219),
+            VelocityTracker.obtain(),
+            Color.argb(255, 100, 68, 65),
+            EventsContainer(Calendar.getInstance()),
+            Locale.getDefault(),
+            TimeZone.getDefault()
+        )
     private val gestureDetector: GestureDetectorCompat
     private var horizontalScrollEnabled = true
 
@@ -103,7 +114,10 @@ class CompactCalendarView @JvmOverloads constructor(
 
     init {
         gestureDetector = GestureDetectorCompat(getContext(), gestureListener)
-        animationHandler = AnimationHandler(compactCalendarController, this)
+        animationHandler = AnimationHandler(
+            compactCalendarController,
+            this
+        )
     }
 
     fun setAnimationListener(compactCalendarAnimationListener: CompactCalendarAnimationListener) {

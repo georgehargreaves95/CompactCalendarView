@@ -1,8 +1,10 @@
-package com.github.sundeepk.RotaCalendar
+package com.github.sundeepk.rotacalendar.animation
 
 
 import android.view.animation.Animation
 import android.view.animation.Transformation
+import com.github.sundeepk.rotacalendar.calendar.CompactCalendarController
+import com.github.sundeepk.rotacalendar.calendar.CompactCalendarView
 
 internal class CollapsingAnimation(
     private val view: CompactCalendarView,

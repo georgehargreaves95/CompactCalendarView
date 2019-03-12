@@ -1,8 +1,8 @@
-package com.github.sundeepk.RotaCalendar
+package com.github.sundeepk.rotacalendar
 
 import android.graphics.Color
 
-import com.github.sundeepk.RotaCalendar.domain.Event
+import com.github.sundeepk.rotacalendar.events.Event
 
 import junit.framework.Assert
 
@@ -17,8 +17,9 @@ import java.util.Locale
 import java.util.Random
 import java.util.TimeZone
 
-import com.github.sundeepk.RotaCalendar.CompactCalendarHelper.getMultipleEventsForEachDayAsMap
-import com.github.sundeepk.RotaCalendar.CompactCalendarHelper.setTimeToMidnightAndGet
+import com.github.sundeepk.rotacalendar.CompactCalendarHelper.getMultipleEventsForEachDayAsMap
+import com.github.sundeepk.rotacalendar.CompactCalendarHelper.setTimeToMidnightAndGet
+import com.github.sundeepk.rotacalendar.events.EventsContainer
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
@@ -144,7 +145,12 @@ class EventsContainerTest {
         underTest!!.addEvents(expectedEvents)
 
         //Sun, 20 September 2015 14:20:00 GMT
-        underTest!!.removeEvent(Event(Color.BLUE, 1442758800000L))
+        underTest!!.removeEvent(
+            Event(
+                Color.BLUE,
+                1442758800000L
+            )
+        )
 
         val actualEvents = underTest!!.getEventsForMonth(1422748800000L)
         val empty = underTest!!.getEventsForMonth(1442758800000L)
@@ -375,7 +381,8 @@ class EventsContainerTest {
         assertEquals(events[6], calendarDayEvents!![0])
 
         //add event in Sun, 07 Jun 2015 18:20:51 GMT for same day, making total 2 events for same day now
-        val extraEventAdded = Event(Color.GREEN, 1433701251000L)
+        val extraEventAdded =
+            Event(Color.GREEN, 1433701251000L)
         underTest!!.addEvent(extraEventAdded)
 
         //Sun, 07 Jun 2015 18:20:51 GMT

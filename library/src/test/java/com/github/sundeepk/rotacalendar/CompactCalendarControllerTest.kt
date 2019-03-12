@@ -1,4 +1,4 @@
-package com.github.sundeepk.RotaCalendar
+package com.github.sundeepk.rotacalendar
 
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -19,9 +19,11 @@ import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 
-import com.github.sundeepk.RotaCalendar.CompactCalendarHelper.getDayEventWith2EventsPerDay
-import com.github.sundeepk.RotaCalendar.CompactCalendarHelper.getDayEventWithMultipleEventsPerDay
-import com.github.sundeepk.RotaCalendar.CompactCalendarHelper.getEvents
+import com.github.sundeepk.rotacalendar.CompactCalendarHelper.getDayEventWith2EventsPerDay
+import com.github.sundeepk.rotacalendar.CompactCalendarHelper.getDayEventWithMultipleEventsPerDay
+import com.github.sundeepk.rotacalendar.CompactCalendarHelper.getEvents
+import com.github.sundeepk.rotacalendar.calendar.CompactCalendarController
+import com.github.sundeepk.rotacalendar.events.EventsContainer
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.mockito.Mockito.inOrder
